@@ -9,7 +9,9 @@ export default function Header() {
     <>
     <header className="w-full flex items-center justify-between px-6 py-4">
         
-      <div className="text-xl font-bold">Next Task</div>
+      <Link href="/" className="text-xl font-bold">
+        Next Task
+      </Link>
 
       <div className="flex items-center gap-4">
 
