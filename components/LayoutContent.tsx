@@ -2,7 +2,7 @@
 import React from "react";
 import { usePathname } from "next/navigation";
 import Header from "@/components/header";
-import ReduxProvider from "@/components/ReduxProvider";
+// import ReduxProvider from "@/components/ReduxProvider";
 
 export default function LayoutContent({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -10,9 +10,9 @@ export default function LayoutContent({ children }: { children: React.ReactNode 
     return (
         <>
             {!hideHeader && <Header />}
-            <ReduxProvider>
+            {/* <ReduxProvider> */}
                 {children}
-            </ReduxProvider>
+            {/* </ReduxProvider> */}
         </>
     );
 }

@@ -1,3 +1,7 @@
+/* to reserve space for scrollbar to prevent layout shift */
+body {
+  overflow-y: scroll; 
+}
 @import "tailwindcss";
 @import "tw-animate-css";
 
