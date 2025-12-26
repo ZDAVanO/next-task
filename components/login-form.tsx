@@ -1,3 +1,5 @@
+"use client"
+
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -14,6 +16,8 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+
+import { signIn } from "next-auth/react"
 
 export function LoginForm({
   className,
@@ -54,7 +58,11 @@ export function LoginForm({
               </Field>
               <Field>
                 <Button type="submit">Login</Button>
-                <Button variant="outline" type="button">
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => signIn("google", { callbackUrl: "/" })}
+                >
                   Login with Google
                 </Button>
                 <FieldDescription className="text-center">

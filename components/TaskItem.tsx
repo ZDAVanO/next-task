@@ -98,7 +98,7 @@ export default function TaskItem({ task }: { task: Task }) {
             onBlur={handleSaveTitle}
             onKeyDown={handleKeyDown}
             className={`font-medium bg-transparent border-none outline-none w-full p-0 focus:ring-0 ${
-              optimisticTask.isCompleted ? "line-through text-muted-foreground" : ""
+              optimisticTask.isCompleted ? " " : ""
             }`}
           />
         ) : (
