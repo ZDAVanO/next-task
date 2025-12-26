@@ -5,12 +5,13 @@ import classes from "./page.module.css";
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input"
-
+import { Input } from "@/components/ui/input";
 import Counter from "@/components/Counter";
 import TaskItem from "@/components/TaskItem";
 import { addTask } from "@/lib/actions";
-
+import { getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/[...nextauth]/route";
+import { redirect } from "next/navigation";
 
 async function AddTaskForm() {
   return (
@@ -50,8 +51,11 @@ async function Tasks() {
   );
 }
 
-
-export default function Home() {
+export default async function Home() {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    redirect("/login");
+  }
   return (
     <div className="w-full px-4 py-4">
       <div className="max-w-3xl mx-auto">
