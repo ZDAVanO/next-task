@@ -5,7 +5,7 @@ import ReduxProvider from "@/components/ReduxProvider";
 
 import { ThemeProvider } from "@/components/theme-provider"
 // import Header from "@/components/header";
-import LayoutContent from "@/components/LayoutContent";
+// import LayoutContent from "@/components/LayoutContent";
 
 import { Providers } from "@/components/Providers"
 import { getServerSession } from "next-auth";
@@ -44,10 +44,10 @@ export default async function RootLayout({children,}: Readonly<{children: React.
             enableSystem
             disableTransitionOnChange
           >
-
-            <LayoutContent>
+            
+            {/* <LayoutContent> */}
               {children}
-            </LayoutContent>
+            {/* </LayoutContent> */}
 
           </ThemeProvider>
 
