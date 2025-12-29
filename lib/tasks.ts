@@ -15,7 +15,10 @@ async function requireUserId() {
 
 export async function getTasks() {
   const userId = await requireUserId();
-  return prisma.task.findMany({ where: { userId }, orderBy: { createdAt: "desc" } });
+  return prisma.task.findMany({ 
+    where: { userId }, 
+    orderBy: { position: "asc" } 
+  });
 }
 
 export async function getTask(id: string) {
@@ -25,12 +28,37 @@ export async function getTask(id: string) {
 
 export async function createTask(title: string) {
   const userId = await requireUserId();
+  
+  // Get the current max position to put the new task at the end
+  const lastTask = await prisma.task.findFirst({
+    where: { userId },
+    orderBy: { position: "desc" },
+    select: { position: true }
+  });
+
+  const nextPosition = (lastTask?.position ?? -1) + 1;
+
   return prisma.task.create({
     data: {
       title,
       userId,
+      position: nextPosition,
     },
   });
+}
+
+export async function reorderTasks(taskIds: string[]) {
+  const userId = await requireUserId();
+  
+  // Update positions in a transaction for efficiency and atomicity
+  return prisma.$transaction(
+    taskIds.map((id, index) => 
+      prisma.task.update({
+        where: { id, userId },
+        data: { position: index }
+      })
+    )
+  );
 }
 
 export async function updateTask(id: string, data: Partial<{ title: string; isCompleted: boolean }>) {

@@ -1,7 +1,7 @@
 "use server";
 
 // Server actions for tasks
-import { updateTask, deleteTask as deleteTaskLib, createTask } from "@/lib/tasks";
+import { updateTask, deleteTask as deleteTaskLib, createTask, reorderTasks } from "@/lib/tasks";
 import { revalidatePath } from "next/cache";
 
 export async function addTask(formData: FormData) {
@@ -34,5 +34,13 @@ export async function changeTaskTitle(id: string, title: string) {
     return;
   }
   await updateTask(id, { title: newTitle });
+  revalidatePath("/");
+}
+
+export async function reorderTasksAction(taskIds: string[]) {
+  if (!Array.isArray(taskIds) || taskIds.some(id => typeof id !== "string")) {
+    return;
+  }
+  await reorderTasks(taskIds);
   revalidatePath("/");
 }

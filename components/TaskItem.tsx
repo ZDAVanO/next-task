@@ -42,6 +42,7 @@ export default function TaskItem({ task }: { task: Task }) {
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id,
+    disabled: isEditing,
   });
 
   const style = {
@@ -92,23 +93,25 @@ export default function TaskItem({ task }: { task: Task }) {
   return (
     <li
       ref={setNodeRef}
+      style={style}
       {...attributes}
       {...listeners}
-      style={style}
-      className={`border rounded flex items-center gap-3 p-3 relative hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors hover:text-black dark:hover:text-white list-none ${isDragging ? "shadow-2xl bg-white dark:bg-gray-900 border-blue-400 opacity-90 cursor-grabbing" : "cursor-grab"
+      className={`border rounded flex items-center relative hover:bg-gray-50/50 dark:hover:bg-gray-900/30 transition-colors list-none p-3 gap-3 ${isDragging ? "shadow-2xl bg-white dark:bg-gray-900 border-blue-400 opacity-90 z-50 cursor-grabbing" : "cursor-grab"
         }`}
     >
       <Checkbox
         checked={optimisticTask.isCompleted}
         onCheckedChange={(checked) => {
-          startTransition(() => { // startTransition to avoid blocking UI
+          startTransition(() => {
             setOptimisticTask({ type: "TOGGLE_COMPLETION", isCompleted: checked as boolean });
             toggleTask(task.id, checked as boolean);
           });
         }}
+        onClick={(e) => e.stopPropagation()}
         aria-label={optimisticTask.isCompleted ? "Mark as incomplete" : "Mark as complete"}
         className="w-5 h-5 cursor-pointer z-10"
       />
+
 
       <div className="flex-1">
         {isEditing ? (
@@ -140,6 +143,7 @@ export default function TaskItem({ task }: { task: Task }) {
         href={`/tasks/${task.id}`}
         className="z-10"
         aria-label="Go to task details"
+        onClick={(e) => e.stopPropagation()}
       >
         <Button
           variant="ghost"
@@ -155,7 +159,8 @@ export default function TaskItem({ task }: { task: Task }) {
         variant="ghost"
         size="icon"
         className="text-red-500 hover:text-red-700 hover:bg-red-100 dark:hover:bg-red-900/20 cursor-pointer z-10"
-        onClick={() => {
+        onClick={(e) => {
+          e.stopPropagation();
           startTransition(() => {
             deleteTask(task.id);
           });
