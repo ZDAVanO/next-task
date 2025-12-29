@@ -6,6 +6,7 @@ import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 
 import { Separator } from "@/components/ui/separator"
+import { ThemeSubMenu } from "@/components/theme-sub-menu";
 import { ModeToggle } from "@/components/mode-toggle";
 import {
   DropdownMenu,
@@ -29,29 +30,35 @@ export default function Header() {
             <nav className="flex gap-3">
               {/* 1. Check if data is still loading */}
               {status === "loading" ? (
-                <div className="size-8 rounded-full bg-muted animate-pulse" /> // Just a gray pulsing blob
+                <div className="h-8 w-24 rounded-full bg-muted animate-pulse" />
               ) : !session?.user ? (
                 <>
+                  <ModeToggle />
                   <Link href="/login"><Button variant="secondary">Login</Button></Link>
                   <Link href="/signup"><Button variant="default">Sign Up</Button></Link>
                 </>
               ) : (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="rounded-full overflow-hidden size-8">
-                      {session.user.image ? (
-                        <Image
-                          src={session.user.image}
-                          alt={session.user.name ?? "User avatar"}
-                          width={32}
-                          height={32}
-                          className="rounded-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-8 h-8 bg-muted-foreground/10 rounded-full flex items-center justify-center text-sm">
-                          {session.user.name?.[0] ?? "U"}
-                        </div>
-                      )}
+                    <button className="flex items-center gap-2 hover:bg-muted p-1 pr-3 rounded-full transition-colors">
+                      <div className="rounded-full overflow-hidden size-8 shrink-0">
+                        {session.user.image ? (
+                          <Image
+                            src={session.user.image}
+                            alt={session.user.name ?? "User avatar"}
+                            width={32}
+                            height={32}
+                            className="rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-8 h-8 bg-muted-foreground/10 rounded-full flex items-center justify-center text-sm uppercase">
+                            {session.user.name?.[0] ?? "U"}
+                          </div>
+                        )}
+                      </div>
+                      <span className="text-sm font-medium max-w-[150px] truncate hidden sm:inline-block">
+                        {session.user.name}
+                      </span>
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
@@ -64,6 +71,8 @@ export default function Header() {
                       </div>
                     </div>
                     <DropdownMenuSeparator />
+                    <ThemeSubMenu />
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem onSelect={() => signOut({ callbackUrl: "/" })}>
                       Sign out
                     </DropdownMenuItem>
@@ -71,7 +80,6 @@ export default function Header() {
                 </DropdownMenu>
               )}
             </nav>
-            <ModeToggle />
           </div>
         </div>
       </header>
