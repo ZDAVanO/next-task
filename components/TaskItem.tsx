@@ -8,12 +8,7 @@ import { toggleTask, deleteTask, changeTaskTitle } from "@/lib/actions";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 
-type Task = {
-  id: string;
-  title: string;
-  isCompleted: boolean;
-  createdAt: string | Date;
-};
+import { Task } from "@/types/task";
 
 type OptimisticAction =
   | { type: "TOGGLE_COMPLETION"; isCompleted: boolean }
@@ -54,7 +49,7 @@ export default function TaskItem({ task }: { task: Task }) {
   const handleSaveTitle = () => {
     setIsEditing(false);
     const newTitle = title.trim();
-    if (newTitle.length < 2 || newTitle === optimisticTask.title) {
+    if (newTitle.length < 1 || newTitle === optimisticTask.title) {
       setTitle(optimisticTask.title); // Reset if invalid or unchanged
       return;
     }
@@ -97,16 +92,14 @@ export default function TaskItem({ task }: { task: Task }) {
             onChange={(e) => setTitle(e.target.value)}
             onBlur={handleSaveTitle}
             onKeyDown={handleKeyDown}
-            className={`font-medium bg-transparent border-none outline-none w-full p-0 focus:ring-0 ${
-              optimisticTask.isCompleted ? " " : ""
-            }`}
+            className={`font-medium bg-transparent border-none outline-none w-full p-0 focus:ring-0 ${optimisticTask.isCompleted ? " " : ""
+              }`}
           />
         ) : (
           <div
             onClick={() => setIsEditing(true)}
-            className={`font-medium cursor-text ${
-              optimisticTask.isCompleted ? "line-through text-muted-foreground" : ""
-            }`}
+            className={`font-medium cursor-text ${optimisticTask.isCompleted ? "line-through text-muted-foreground" : ""
+              }`}
           >
             {optimisticTask.title}
           </div>

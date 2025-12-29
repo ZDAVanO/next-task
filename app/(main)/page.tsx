@@ -6,13 +6,13 @@ import classes from "./page.module.css";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Counter from "@/components/Counter";
-import TaskItem from "@/components/TaskItem";
+
 import { addTask } from "@/lib/actions";
 import { getServerSession } from "next-auth";
-// import { authOptions } from "../api/auth/[...nextauth]/route";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
+
+import TasksList from "@/components/TasksList";
 
 async function AddTaskForm() {
   return (
@@ -29,45 +29,26 @@ async function AddTaskForm() {
   );
 }
 
-async function Tasks() {
-  const tasks = await getTasks();
 
-  return (
-    <>
-
-      <ul className="space-y-2">
-        {tasks.map((t) => (
-          <li
-            key={t.id}
-            className="border rounded flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-800 transition hover:text-black dark:hover:text-white list-none"
-          >
-            <TaskItem task={t} />
-          </li>
-        ))}
-      </ul>
-
-      <pre>{JSON.stringify(tasks, null, 2)}</pre>
-
-    </>
-  );
-}
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
   if (!session) {
     redirect("/login");
   }
+
+  const tasks = await getTasks();
+
   return (
     <div className="w-full px-4 py-4">
       <div className="max-w-3xl mx-auto">
         <main>
-          <Counter />
 
           <h1 className="text-2xl font-bold mb-4">Tasks</h1>
           <AddTaskForm />
 
           <Suspense fallback={<p className={classes.loading}>Loading...</p>}>
-            <Tasks />
+            <TasksList tasks={tasks} />
           </Suspense>
         </main>
       </div>

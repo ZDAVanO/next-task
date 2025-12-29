@@ -1,7 +1,9 @@
 "use client"
 
+
 import { Moon, Sun, Monitor } from "lucide-react"
 import { useTheme } from "next-themes"
+import { useState, useEffect } from "react"
 
 import {
     DropdownMenuItem,
@@ -13,13 +15,22 @@ import {
 
 export function ThemeSubMenu() {
     const { setTheme, theme } = useTheme()
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => {
+        setMounted(true)
+    }, [])
 
 
     return (
         <DropdownMenuSub>
-            <DropdownMenuSubTrigger>
+            <DropdownMenuSubTrigger id="theme-sub-menu-trigger">
                 <div className="flex items-center">
-                    {theme === "system" ? (
+                    {!mounted ? (
+                        <div className="h-[1.2rem] w-[1.2rem] flex items-center justify-center">
+                            <Monitor className="h-[1.2rem] w-[1.2rem] opacity-50" />
+                        </div>
+                    ) : theme === "system" ? (
                         <Monitor className="h-[1.2rem] w-[1.2rem]" />
                     ) : (
                         <>
@@ -31,7 +42,7 @@ export function ThemeSubMenu() {
                 </div>
             </DropdownMenuSubTrigger>
             <DropdownMenuPortal>
-                <DropdownMenuSubContent>
+                <DropdownMenuSubContent id="theme-sub-menu-content">
                     <DropdownMenuItem onClick={() => setTheme("light")}>
                         <Sun className="mr-2 h-4 w-4" />
                         <span>Light</span>

@@ -40,7 +40,11 @@ export default function Header() {
               ) : (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="flex items-center gap-2 hover:bg-muted p-1 pr-3 rounded-full transition-colors">
+                    <button
+                      id="user-menu-trigger"
+                      suppressHydrationWarning
+                      className="flex items-center gap-2 hover:bg-muted p-1 sm:pr-3 rounded-full transition-colors"
+                    >
                       <div className="rounded-full overflow-hidden size-8 shrink-0">
                         {session.user.image ? (
                           <Image
@@ -61,7 +65,7 @@ export default function Header() {
                       </span>
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent>
+                  <DropdownMenuContent id="user-menu-content">
                     <div className="px-3 py-2">
                       <div className="text-sm font-medium">
                         {session.user.name}
