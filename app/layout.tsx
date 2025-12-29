@@ -9,7 +9,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 
 import { Providers } from "@/components/Providers"
 import { getServerSession } from "next-auth";
-import { authOptions } from "./api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 
 
 const geistSans = Geist({
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
 };
 
 
-export default async function RootLayout({children,}: Readonly<{children: React.ReactNode;}>) {
+export default async function RootLayout({ children, }: Readonly<{ children: React.ReactNode; }>) {
   const session = await getServerSession(authOptions);
 
   return (
@@ -36,23 +36,23 @@ export default async function RootLayout({children,}: Readonly<{children: React.
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 
         <Providers session={session}>
-        <ReduxProvider>
+          <ReduxProvider>
 
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            
-            {/* <LayoutContent> */}
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+
+              {/* <LayoutContent> */}
               {children}
-            {/* </LayoutContent> */}
+              {/* </LayoutContent> */}
 
-          </ThemeProvider>
+            </ThemeProvider>
 
 
-        </ReduxProvider>
+          </ReduxProvider>
         </Providers>
       </body>
     </html>

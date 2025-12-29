@@ -18,9 +18,50 @@ import { Input } from "@/components/ui/input"
 
 
 import { signIn } from "next-auth/react"
+import { signupUser } from "@/lib/actions/user"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const router = useRouter()
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setError(null)
+    setSuccess(null)
+    setLoading(true)
+
+    const formData = new FormData(event.currentTarget)
+    const password = formData.get("password") as string
+    const confirmPassword = formData.get("confirm-password") as string
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match")
+      setLoading(false)
+      return
+    }
+
+    const result = await signupUser(formData)
+
+    if (result.error) {
+      if (typeof result.error === "string") {
+        setError(result.error)
+      } else {
+        setError("Invalid input. Please check the fields.")
+      }
+    } else {
+      setSuccess("Account created! Redirecting to login...")
+      setTimeout(() => {
+        router.push("/login")
+      }, 2000)
+    }
+    setLoading(false)
+  }
+
   return (
     <Card {...props}>
       <CardHeader>
@@ -30,16 +71,27 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form>
+        <form onSubmit={handleSubmit}>
           <FieldGroup>
+            {error && (
+              <div className="bg-destructive/15 text-destructive p-3 rounded-md text-sm">
+                {error}
+              </div>
+            )}
+            {success && (
+              <div className="bg-green-500/15 text-green-600 p-3 rounded-md text-sm">
+                {success}
+              </div>
+            )}
             <Field>
               <FieldLabel htmlFor="name">Full Name</FieldLabel>
-              <Input id="name" type="text" placeholder="John Doe" required />
+              <Input id="name" name="name" type="text" placeholder="John Doe" required />
             </Field>
             <Field>
               <FieldLabel htmlFor="email">Email</FieldLabel>
               <Input
                 id="email"
+                name="email"
                 type="email"
                 placeholder="m@example.com"
                 required
@@ -51,24 +103,27 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
             </Field>
             <Field>
               <FieldLabel htmlFor="password">Password</FieldLabel>
-              <Input id="password" type="password" required />
+              <Input id="password" name="password" type="password" required />
               <FieldDescription>
-                Must be at least 8 characters long.
+                Must be at least 6 characters long.
               </FieldDescription>
             </Field>
             <Field>
               <FieldLabel htmlFor="confirm-password">
                 Confirm Password
               </FieldLabel>
-              <Input id="confirm-password" type="password" required />
+              <Input id="confirm-password" name="confirm-password" type="password" required />
               <FieldDescription>Please confirm your password.</FieldDescription>
             </Field>
             <FieldGroup>
               <Field>
-                <Button type="submit">Create Account</Button>
+                <Button type="submit" disabled={loading}>
+                  {loading ? "Creating Account..." : "Create Account"}
+                </Button>
                 <Button
                   variant="outline"
                   type="button"
+                  disabled={loading}
                   onClick={() => signIn("google", { callbackUrl: "/" })}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">

@@ -10,7 +10,8 @@ import Counter from "@/components/Counter";
 import TaskItem from "@/components/TaskItem";
 import { addTask } from "@/lib/actions";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+// import { authOptions } from "../api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
 async function AddTaskForm() {
