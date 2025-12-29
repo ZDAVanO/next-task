@@ -10,6 +10,11 @@ import { Trash2 } from "lucide-react";
 
 import { Task } from "@/types/task";
 
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
+
+
 type OptimisticAction =
   | { type: "TOGGLE_COMPLETION"; isCompleted: boolean }
   | { type: "UPDATE_TITLE"; title: string };
@@ -32,6 +37,21 @@ export default function TaskItem({ task }: { task: Task }) {
 
   const [title, setTitle] = useState(optimisticTask.title);
   const [prevOptimisticTitle, setPrevOptimisticTitle] = useState(optimisticTask.title);
+
+
+
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: task.id,
+  });
+
+  const style = {
+    transition: isDragging ? "none" : transition,
+    transform: CSS.Transform.toString(transform),
+    zIndex: isDragging ? 100 : undefined,
+  };
+
+
+
 
   if (optimisticTask.title !== prevOptimisticTitle) {
     setPrevOptimisticTitle(optimisticTask.title);
@@ -70,7 +90,14 @@ export default function TaskItem({ task }: { task: Task }) {
   };
 
   return (
-    <div className="flex-1 flex items-center gap-3 p-3 relative">
+    <li
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
+      style={style}
+      className={`border rounded flex items-center gap-3 p-3 relative hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors hover:text-black dark:hover:text-white list-none ${isDragging ? "shadow-2xl bg-white dark:bg-gray-900 border-blue-400 opacity-90 cursor-grabbing" : "cursor-grab"
+        }`}
+    >
       <Checkbox
         checked={optimisticTask.isCompleted}
         onCheckedChange={(checked) => {
@@ -136,6 +163,6 @@ export default function TaskItem({ task }: { task: Task }) {
       >
         <Trash2 className="w-4 h-4" />
       </Button>
-    </div>
+    </li>
   );
 }
