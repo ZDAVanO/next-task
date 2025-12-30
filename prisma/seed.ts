@@ -1,5 +1,5 @@
-import "dotenv/config";
 import { prisma } from "@/lib/prisma";
+import { hashUserPassword } from "@/lib/hash";
 
 const taskData = [
   {
@@ -17,16 +17,16 @@ const taskData = [
 ];
 
 export async function main() {
-  // Створюємо користувача
+  // Create a user
   const user = await prisma.user.create({
     data: {
       email: "testuser@example.com",
       name: "Test User",
-      password: "testpassword",
+      hashedPassword: hashUserPassword("testpassword"),
     },
   });
 
-  // Створюємо таски для цього користувача
+  // Create tasks for this user
   for (const t of taskData) {
     await prisma.task.create({
       data: {

@@ -1,8 +1,10 @@
 "use client"
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import TaskItem from "@/components/TaskItem";
 import { Task } from "@/types/task";
 import { reorderTasksAction } from "@/lib/actions";
+import { useAppStore } from "@/lib/store";
+import { Search } from "lucide-react";
 
 import {
     DndContext,
@@ -53,6 +55,7 @@ export default function TasksList({ tasks }: { tasks: Task[] }) {
 
     // Local state to manage the order optimistically
     const [items, setItems] = useState(tasks);
+    const { searchQuery, setSearchQuery } = useAppStore();
 
     // to prevent ssr error
     const [isMounted, setIsMounted] = useState(false);
@@ -64,6 +67,15 @@ export default function TasksList({ tasks }: { tasks: Task[] }) {
     useEffect(() => {
         setItems(tasks);
     }, [tasks]);
+
+    const filteredItems = useMemo(() => {
+        if (!searchQuery.trim()) return items;
+
+        const query = searchQuery.toLowerCase();
+        return items.filter(task => {
+            return task.title.toLowerCase().includes(query);
+        });
+    }, [items, searchQuery]);
 
     const handleDragEnd = async (event: DragEndEvent) => {
         const { active, over } = event;
@@ -90,10 +102,9 @@ export default function TasksList({ tasks }: { tasks: Task[] }) {
         }
     };
 
-    // prevent ssr error
     if (!isMounted) {
         return (
-            <ul className="space-y-2">
+            <ul className="space-y-3">
                 {items.map((task) => (
                     <TaskItem task={task} key={task.id} />
                 ))}
@@ -101,22 +112,38 @@ export default function TasksList({ tasks }: { tasks: Task[] }) {
         );
     }
 
-    return <>
-        <DndContext
-            id="tasks-dnd"
-            sensors={sensors}
-            onDragEnd={handleDragEnd}
-            collisionDetection={closestCorners}
-            modifiers={[softRestrictToVerticalAxis]}
-        >
-            <SortableContext items={items} strategy={verticalListSortingStrategy}>
-                <ul className="space-y-2">
-                    {items.map((task) => (
-                        <TaskItem task={task} key={task.id} />
-                    ))}
-                </ul>
-            </SortableContext>
-        </DndContext>
-
-    </>
+    return (
+        <div className="space-y-6">
+            {filteredItems.length === 0 && items.length > 0 ? (
+                <div className="text-center py-12 bg-muted/20 rounded-2xl border-2 border-dashed border-muted">
+                    <div className="inline-flex items-center justify-center p-4 rounded-full bg-muted/30 mb-4">
+                        <Search className="h-6 w-6 text-muted-foreground" />
+                    </div>
+                    <p className="text-muted-foreground font-medium">No tasks found matching your search.</p>
+                    <button
+                        onClick={() => setSearchQuery("")}
+                        className="mt-2 text-primary hover:underline font-medium"
+                    >
+                        Clear filter
+                    </button>
+                </div>
+            ) : (
+                <DndContext
+                    id="tasks-dnd"
+                    sensors={sensors}
+                    onDragEnd={handleDragEnd}
+                    collisionDetection={closestCorners}
+                    modifiers={[softRestrictToVerticalAxis]}
+                >
+                    <SortableContext items={filteredItems} strategy={verticalListSortingStrategy}>
+                        <ul className="space-y-3">
+                            {filteredItems.map((task) => (
+                                <TaskItem task={task} key={task.id} />
+                            ))}
+                        </ul>
+                    </SortableContext>
+                </DndContext>
+            )}
+        </div>
+    );
 }

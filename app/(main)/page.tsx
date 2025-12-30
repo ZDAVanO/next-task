@@ -11,6 +11,7 @@ import { addTask } from "@/lib/actions";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { Plus } from "lucide-react";
 
 import TasksList from "@/components/TasksList";
 
@@ -24,7 +25,10 @@ async function AddTaskForm() {
         autoComplete="off"
         required
       />
-      <Button type="submit" variant="default">Add</Button>
+      <Button type="submit" variant="default">
+        <Plus className="h-4 w-4" />
+        Add
+      </Button>
     </form>
   );
 }

@@ -16,17 +16,22 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 
+import { SearchBar } from "@/components/search-bar";
+
 export default function Header() {
   const { data: session, status } = useSession()
 
   return (
     <>
       <header className="w-full px-3 py-3">
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold">
+        <div className="max-w-5xl mx-auto flex items-center justify-between gap-4">
+          <Link href="/" className="text-lg sm:text-xl font-bold shrink-0 min-w-[80px]">
             Next Task
           </Link>
-          <div className="flex items-center gap-3">
+
+          {session?.user && <SearchBar />}
+
+          <div className="flex items-center gap-3 shrink-0">
             <nav className="flex gap-3">
               {/* 1. Check if data is still loading */}
               {status === "loading" ? (
@@ -65,7 +70,7 @@ export default function Header() {
                       </span>
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent id="user-menu-content">
+                  <DropdownMenuContent id="user-menu-content" align="end">
                     <div className="px-3 py-2">
                       <div className="text-sm font-medium">
                         {session.user.name}
