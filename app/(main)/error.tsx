@@ -1,6 +1,6 @@
 'use client';
 
-export default function Error({ error }) {
+export default function Error({ error }: { error: Error & { digest?: string } }) {
     return (
         <main className="container mx-auto p-4 error">
             <h1 className="text-2xl font-bold mb-4">Something went wrong!</h1>
