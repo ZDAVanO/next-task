@@ -25,6 +25,21 @@ import {
     arrayMove,
     sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Filter, ListFilter, SlidersHorizontal } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 
 const softRestrictToVerticalAxis: Modifier = ({ transform }) => {
@@ -57,7 +72,7 @@ export default function TasksList({ tasks }: { tasks: Task[] }) {
 
     // Local state to manage the order optimistically
     const [items, setItems] = useState(tasks);
-    const { searchQuery, setSearchQuery } = useAppStore();
+    const { searchQuery, setSearchQuery, taskFilter, setTaskFilter, sortBy, setSortBy } = useAppStore();
 
     // to prevent ssr error
     const [isMounted, setIsMounted] = useState(false);
@@ -71,18 +86,37 @@ export default function TasksList({ tasks }: { tasks: Task[] }) {
     }, [tasks]);
 
     const filteredItems = useMemo(() => {
-        if (!searchQuery.trim()) return items;
+        let result = items;
 
-        const query = searchQuery.toLowerCase();
-        return items.filter(task => {
-            return task.title.toLowerCase().includes(query);
-        });
-    }, [items, searchQuery]);
+        // Apply search filter
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase();
+            result = result.filter(task => task.title.toLowerCase().includes(query));
+        }
+
+        // Apply status filter
+        if (taskFilter === 'active') {
+            result = result.filter(task => !task.isCompleted);
+        } else if (taskFilter === 'completed') {
+            result = result.filter(task => task.isCompleted);
+        }
+
+        // Apply sorting
+        if (sortBy === 'title') {
+            result = [...result].sort((a, b) => a.title.localeCompare(b.title));
+        } else if (sortBy === 'date') {
+            result = [...result].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        }
+        // If sorting by position (default), we rely on the order of the 'items' array
+        // which matches the drag-and-drop order.
+
+        return result;
+    }, [items, searchQuery, taskFilter, sortBy]);
 
     const handleDragEnd = async (event: DragEndEvent) => {
         const { active, over } = event;
 
-        if (!over || active.id === over.id) {
+        if (!over || active.id === over.id || sortBy !== 'position') {
             return;
         }
 
@@ -161,10 +195,13 @@ export default function TasksList({ tasks }: { tasks: Task[] }) {
                     </div>
                     <p className="text-muted-foreground font-medium">No tasks found matching your search.</p>
                     <button
-                        onClick={() => setSearchQuery("")}
+                        onClick={() => {
+                            setTaskFilter('all');
+                            setSearchQuery("");
+                        }}
                         className="mt-2 text-primary hover:underline font-medium"
                     >
-                        Clear filter
+                        Clear filters
                     </button>
                 </div>
             ) : (
