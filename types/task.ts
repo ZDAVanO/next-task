@@ -4,4 +4,6 @@ export type Task = {
   position: number;
   isCompleted: boolean;
   createdAt: string | Date;
+  parentId?: string | null;
+  subtasks?: Task[];
 };

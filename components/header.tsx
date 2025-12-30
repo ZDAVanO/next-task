@@ -22,7 +22,7 @@ export default function Header() {
   const { data: session, status } = useSession()
 
   return (
-    <>
+    <div className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b">
       <header className="w-full px-3 py-3">
         <div className="max-w-5xl mx-auto flex items-center justify-between gap-4">
           <Link href="/" className="text-lg sm:text-xl font-bold shrink-0 min-w-[80px]">
@@ -92,7 +92,6 @@ export default function Header() {
           </div>
         </div>
       </header>
-      <Separator className="" />
-    </>
+    </div>
   );
 }

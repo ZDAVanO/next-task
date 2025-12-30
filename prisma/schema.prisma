@@ -16,6 +16,10 @@ model Task {
   createdAt   DateTime @default(now())
   userId      String
   user        User     @relation(fields: [userId], references: [id])
+
+  parentId    String?
+  parent      Task?    @relation("Subtasks", fields: [parentId], references: [id], onDelete: Cascade)
+  subtasks    Task[]   @relation("Subtasks")
 }
 
 

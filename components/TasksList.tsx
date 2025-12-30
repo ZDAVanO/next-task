@@ -2,9 +2,11 @@
 import { useState, useEffect, useMemo } from "react";
 import TaskItem from "@/components/TaskItem";
 import { Task } from "@/types/task";
-import { reorderTasksAction } from "@/lib/actions";
+import { reorderTasksAction, deleteTask } from "@/lib/actions";
 import { useAppStore } from "@/lib/store";
 import { Search } from "lucide-react";
+import { toast } from "sonner";
+import { startTransition } from "react";
 
 import {
     DndContext,
@@ -102,11 +104,49 @@ export default function TasksList({ tasks }: { tasks: Task[] }) {
         }
     };
 
+    const handleDeleteTask = (taskToDelete: Task) => {
+        const previousItems = [...items];
+        const index = items.findIndex(item => item.id === taskToDelete.id);
+
+        // Optimistic update
+        setItems(items.filter(item => item.id !== taskToDelete.id));
+
+        let undoOccurred = false;
+
+        toast.success(`Task "${taskToDelete.title}" deleted`, {
+            duration: 5000,
+            action: {
+                label: "Undo",
+                onClick: () => {
+                    undoOccurred = true;
+                    setItems(previousItems);
+                    toast.info("Deletion cancelled");
+                },
+            },
+            onAutoClose: () => {
+                if (!undoOccurred) {
+                    startTransition(() => {
+                        deleteTask(taskToDelete.id);
+                    });
+                }
+            },
+            onDismiss: () => {
+                if (!undoOccurred) {
+                    startTransition(() => {
+                        deleteTask(taskToDelete.id).catch(() => {
+                            // If it fails (e.g. already deleted by onAutoClose), we don't care much
+                        });
+                    });
+                }
+            }
+        });
+    };
+
     if (!isMounted) {
         return (
             <ul className="space-y-3">
                 {items.map((task) => (
-                    <TaskItem task={task} key={task.id} />
+                    <TaskItem task={task} key={task.id} onDelete={() => handleDeleteTask(task)} />
                 ))}
             </ul>
         );
@@ -138,7 +178,7 @@ export default function TasksList({ tasks }: { tasks: Task[] }) {
                     <SortableContext items={filteredItems} strategy={verticalListSortingStrategy}>
                         <ul className="space-y-3">
                             {filteredItems.map((task) => (
-                                <TaskItem task={task} key={task.id} />
+                                <TaskItem task={task} key={task.id} onDelete={() => handleDeleteTask(task)} />
                             ))}
                         </ul>
                     </SortableContext>

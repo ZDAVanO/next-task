@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import ReduxProvider from "@/components/ReduxProvider";
+// import ReduxProvider from "@/components/ReduxProvider";
 
 import { ThemeProvider } from "@/components/theme-provider"
 // import Header from "@/components/header";
@@ -28,6 +28,8 @@ export const metadata: Metadata = {
 };
 
 
+import { Toaster } from "@/components/ui/sonner"
+
 export default async function RootLayout({ children, }: Readonly<{ children: React.ReactNode; }>) {
   const session = await getServerSession(authOptions);
 
@@ -36,23 +38,24 @@ export default async function RootLayout({ children, }: Readonly<{ children: Rea
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 
         <Providers session={session}>
-          <ReduxProvider>
+          {/* <ReduxProvider> */}
 
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
 
-              {/* <LayoutContent> */}
-              {children}
-              {/* </LayoutContent> */}
+            {/* <LayoutContent> */}
+            {children}
+            {/* </LayoutContent> */}
+            <Toaster />
 
-            </ThemeProvider>
+          </ThemeProvider>
 
 
-          </ReduxProvider>
+          {/* </ReduxProvider> */}
         </Providers>
       </body>
     </html>

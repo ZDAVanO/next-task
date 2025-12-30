@@ -19,7 +19,7 @@ type OptimisticAction =
   | { type: "TOGGLE_COMPLETION"; isCompleted: boolean }
   | { type: "UPDATE_TITLE"; title: string };
 
-export default function TaskItem({ task }: { task: Task }) {
+export default function TaskItem({ task, onDelete }: { task: Task; onDelete: () => void }) {
   const [isEditing, setIsEditing] = useState(false);
   const [optimisticTask, setOptimisticTask] = useOptimistic(
     task,
@@ -161,9 +161,7 @@ export default function TaskItem({ task }: { task: Task }) {
         className="text-red-500 hover:text-red-700 hover:bg-red-100 dark:hover:bg-red-900/20 cursor-pointer z-10"
         onClick={(e) => {
           e.stopPropagation();
-          startTransition(() => {
-            deleteTask(task.id);
-          });
+          onDelete();
         }}
       >
         <Trash2 className="w-4 h-4" />

@@ -17,7 +17,7 @@ export function SearchBar() {
                     placeholder="Search..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-9 sm:pl-10 pr-8 sm:pr-10 h-9 sm:h-10 text-sm bg-muted/50 border-none focus-visible:ring-1 focus-visible:ring-primary rounded-full transition-all"
+                    className="pl-9 sm:pl-10 pr-8 sm:pr-10 h-9 sm:h-10 text-sm bg-muted/50 border-none focus-visible:ring-2 focus-visible:ring-primary rounded-full transition-all"
                 />
                 {searchQuery && (
                     <button
