@@ -135,13 +135,9 @@ describe('TaskItem', () => {
 
             render(<TaskItem task={task} onDelete={mockOnDelete} />)
 
-            const buttons = screen.getAllByRole('button')
-            const deleteButton = buttons.find(btn => btn.querySelector('svg.lucide-trash-2'))
-
-            if (deleteButton) {
-                await user.click(deleteButton)
-                expect(mockOnDelete).toHaveBeenCalledTimes(1)
-            }
+            const deleteButton = screen.getByRole('button', { name: /delete task/i })
+            await user.click(deleteButton)
+            expect(mockOnDelete).toHaveBeenCalledTimes(1)
         })
 
         it('should toggle checkbox when clicked', async () => {
@@ -155,6 +151,19 @@ describe('TaskItem', () => {
             await user.click(checkbox)
 
             expect(toggleTask).toHaveBeenCalledWith('task-toggle', true)
+        })
+
+        it('should toggle completed task back to incomplete when clicked', async () => {
+            const { toggleTask } = await import('@/lib/actions')
+            const user = userEvent.setup()
+            const task = createMockTask({ id: 'task-toggle-completed', isCompleted: true })
+
+            render(<TaskItem task={task} onDelete={mockOnDelete} />)
+
+            const checkbox = screen.getByRole('checkbox')
+            await user.click(checkbox)
+
+            expect(toggleTask).toHaveBeenCalledWith('task-toggle-completed', false)
         })
 
         it('should enter edit mode when clicking on title', async () => {

@@ -36,8 +36,9 @@ vi.mock('@/lib/store', () => ({
     }),
 }))
 
+let taskIdCounter = 0
 const createMockTask = (overrides: Partial<Task> = {}): Task => ({
-    id: `task-${Math.random().toString(36).substr(2, 9)}`,
+    id: overrides.id ?? `task-${++taskIdCounter}`,
     title: 'Test Task',
     isCompleted: false,
     createdAt: new Date('2024-01-01'),
@@ -48,6 +49,7 @@ const createMockTask = (overrides: Partial<Task> = {}): Task => ({
 describe('TasksList', () => {
     beforeEach(() => {
         vi.clearAllMocks()
+        taskIdCounter = 0
     })
 
     describe('rendering', () => {
