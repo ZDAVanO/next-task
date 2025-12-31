@@ -163,6 +163,7 @@ export default function TaskItem({ task, onDelete }: { task: Task; onDelete: () 
           e.stopPropagation();
           onDelete();
         }}
+        aria-label="Delete task"
       >
         <Trash2 className="w-4 h-4" />
       </Button>
