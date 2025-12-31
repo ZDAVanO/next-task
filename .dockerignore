@@ -1,0 +1,11 @@
+node_modules
+.next
+.git
+*.log
+.env*
+tests/
+playwright-report/
+lib/generated/prisma
+coverage
+*.tsbuildinfo
+drafts/
